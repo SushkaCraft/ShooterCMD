@@ -447,6 +447,7 @@ void loadMapData(std::vector<std::vector<char>>& map) {
 	map[30][45] = '#';
 	map[30][47] = '%';
 	map[30][57] = '#';
+	//map[][] = '&'; Dont work.
 }
 
 #endif
