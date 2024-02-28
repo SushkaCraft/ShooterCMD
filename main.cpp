@@ -3,7 +3,7 @@
 #include <random>
 #include <conio.h>
 #include <windows.h>
-#include "map_data.h" 
+#include "map_data.h"
 
 const int HEIGHT = 32;
 const int WIDTH = 64;
@@ -91,6 +91,7 @@ private:
     Bullet bullet;
     HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
     std::mt19937 rng; 
+    std::string playerName = "soldier_";
 
     void setColor(int color) {
         SetConsoleTextAttribute(console, color);
@@ -102,7 +103,7 @@ private:
     }
 
     void displayStatus() {
-        std::cout << "Health: " << player.getLives() << "                                          " << "Last move: " << player.getDirectionSymbol() << std::endl;
+        std::cout << "Health: " << player.getLives() << "                                          " << "Last move: " << player.getDirectionSymbol() << std::endl << "Name: " << playerName << std::endl;
     }
 
     void updatePlayerAppearance() {
@@ -117,7 +118,7 @@ private:
 
     void setConsoleSize(int width, int height) {
         COORD coord = {static_cast<SHORT>(width), static_cast<SHORT>(height)};
-        SMALL_RECT Rect = {0, 0, static_cast<SHORT>(width - 1), static_cast<SHORT>(height + 0.5)};
+        SMALL_RECT Rect = {0, 0, static_cast<SHORT>(width - 1), static_cast<SHORT>(height + 1)};
         SetConsoleScreenBufferSize(console, coord);
         SetConsoleWindowInfo(console, TRUE, &Rect);
     }
@@ -183,9 +184,18 @@ private:
 
 public:
     Game() : rng(std::random_device()()) {
+        requestPlayerName();
         setConsoleSize(WIDTH, HEIGHT + 1); 
         initializeMap();
         placePlayer();
+    }
+    
+    void requestPlayerName() {
+        std::cout << "Enter your name (4-8 characters): ";
+        std::cin >> playerName;
+        if (playerName.length() < 4 || playerName.length() > 8) {
+            playerName = "soldier_";
+        }
     }
 
     void run() {
