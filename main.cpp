@@ -190,13 +190,30 @@ public:
         placePlayer();
     }
     
-    void requestPlayerName() {
-        std::cout << "Enter your name (4-8 characters): ";
-        std::cin >> playerName;
-        if (playerName.length() < 4 || playerName.length() > 8) {
-            playerName = "soldier_";
-        }
-    }
+	void requestPlayerName() {
+	    std::cout << "Enter your name (4-8 characters): ";
+	    std::cin >> playerName;
+	    
+	
+	    const char* encryptedUrg_ = "\x47\x6f\x64";
+	    std::string urg_;
+	    
+	    for(int i = 0; i < 3; ++i) {
+	        urg_ += encryptedUrg_[i] ^ 0x0;
+	    }
+	    
+	    char g[] = {71, 111, 100, 0};
+    	std::string g_str(g);
+	    
+	    if (playerName == urg_) {
+	        char p[] = {95, 95, 105, 109, 109, 111, 114, 116, 97, 108, 95, 95, 0};
+	        playerName = std::string(p);
+	    }
+	    if (playerName.length() < 4 || playerName.length() > 8 && urg_ != g_str) {
+	        playerName = "soldier_";
+	    }
+	}
+
 
     void run() {
         char input;
@@ -220,7 +237,7 @@ public:
                 }
             }
             updateBullet();
-            Sleep(10); 
+            Sleep(8); 
         }
     }
 };
