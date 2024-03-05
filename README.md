@@ -5,8 +5,8 @@ Shooter - Control Mission Deployment.
 
 Current version 0.2.3
 
-**-Resolved a bug causing objects to remove when shot at point-blank range.
--The cursor is hidden during gameplay to eliminate flickering.**
+- **Resolved a bug causing objects to remove when shot at point-blank range.**
+- **The cursor is hidden during gameplay to eliminate flickering.**
 
 ## Controls
 - **Q**: Quit the game.
