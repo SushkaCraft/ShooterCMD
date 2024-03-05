@@ -101,6 +101,13 @@ private:
         COORD topLeft = {0, 0};
         SetConsoleCursorPosition(console, topLeft);
     }
+    
+    void setCursorVisibility(bool isVisible) {
+	    CONSOLE_CURSOR_INFO cursorInfo;
+	    GetConsoleCursorInfo(console, &cursorInfo);
+	    cursorInfo.bVisible = isVisible; // FALSE для скрытия, TRUE для отображения
+	    SetConsoleCursorInfo(console, &cursorInfo);
+	}
 
     void displayStatus() {
         std::cout << "Health: " << player.getLives() << "                                          " << "Last move: " << player.getDirectionSymbol() << std::endl << "Name: " << playerName << std::endl;
@@ -160,31 +167,50 @@ private:
         }
     }
 
-    void shoot() {
-        if (!bullet.isActive) {
-            bullet.position = player.getPositionInFront();
-            bullet.direction = player.getPositionInFront() - player.getPosition();
-            bullet.isActive = true;
-        }
-    }
+	void shoot() {
+	    if (!bullet.isActive) {
+	        Position frontPosition = player.getPositionInFront();
+	        // Проверяем, свободна ли позиция перед игроком и не является ли стеной или другим объектом
+	        if (frontPosition.x > 0 && frontPosition.x < WIDTH - 1 && frontPosition.y > 0 && frontPosition.y < HEIGHT - 1 && map[frontPosition.y][frontPosition.x] == ' ') {
+	            bullet.position = frontPosition;
+	            bullet.direction = player.getPositionInFront() - player.getPosition();
+	            bullet.isActive = true;
+	        }
+	    }
+	}
 
-    void updateBullet() {
-        if (bullet.isActive) {
-            Position nextPosition = bullet.position + bullet.direction;
-            if (nextPosition.x > 0 && nextPosition.x < WIDTH - 1 && nextPosition.y > 0 && nextPosition.y < HEIGHT - 1 && map[nextPosition.y][nextPosition.x] == ' ') {
-                map[bullet.position.y][bullet.position.x] = ' '; 
-                bullet.move();
-                map[bullet.position.y][bullet.position.x] = '*'; 
-            } else {
-                map[bullet.position.y][bullet.position.x] = ' ';
-                bullet.isActive = false; 
-            }
-        }
-    }
+	void updateBullet() {
+	    if (bullet.isActive) {
+	        Position nextPosition = bullet.position + bullet.direction;
+	        // Проверяем, не выходит ли следующая позиция пули за пределы карты
+	        if (nextPosition.x > 0 && nextPosition.x < WIDTH - 1 && nextPosition.y > 0 && nextPosition.y < HEIGHT - 1) {
+	            char nextCell = map[nextPosition.y][nextPosition.x];
+	            // Если следующая позиция пуста, пуля продолжает движение
+	            if (nextCell == ' ') {
+	                map[bullet.position.y][bullet.position.x] = ' '; // Очищаем текущую позицию пули
+	                bullet.move();
+	                map[bullet.position.y][bullet.position.x] = '*'; // Отмечаем новую позицию пули
+	            } else {
+	                // В противном случае (если пуля столкнулась с объектом), удаляем пулю
+	                map[bullet.position.y][bullet.position.x] = ' ';
+	                bullet.isActive = false;
+	                // Если пуля столкнулась с объектом, который должен быть уничтожен, удаляем этот объект. Может быть потом верну
+//	                if (nextCell == '+' || nextCell == '%') {
+//	                    map[nextPosition.y][nextPosition.x] = ' ';
+//	                }
+	            }
+	        } else {
+	            // Если следующая позиция выходит за пределы карты, удаляем пулю
+	            map[bullet.position.y][bullet.position.x] = ' ';
+	            bullet.isActive = false;
+	        }
+	    }
+	}
 
 public:
     Game() : rng(std::random_device()()) {
         requestPlayerName();
+        setCursorVisibility(false);
         setConsoleSize(WIDTH, HEIGHT + 1); 
         initializeMap();
         placePlayer();
@@ -240,11 +266,15 @@ public:
             Sleep(8); 
         }
     }
+    
+    ~Game() {
+	    setCursorVisibility(true); // Возвращаем видимость курсора при выходе из игры
+	}
 };
 
 int main() {
     SetConsoleTitle("Shooter - Control Mission Deployment");
-    system("chcp 65001 && cls"); 
+    system("chcp 65001 && cls");
     Game game;
     game.run();
     return 0;

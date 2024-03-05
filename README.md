@@ -3,9 +3,10 @@ Console Game on c++
 
 Shooter - Control Mission Deployment.
 
-Current version 0.2.2
+Current version 0.2.3
 
-Added the ability to enter the player's Name.
+**-Resolved a bug causing objects to remove when shot at point-blank range.
+-The cursor is hidden during gameplay to eliminate flickering.**
 
 ## Controls
 - **Q**: Quit the game.
