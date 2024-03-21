@@ -119,6 +119,7 @@ private:
         else if (player.getLives() == 1) setColor(12); 
         else if (player.getLives() <= 0) {
             std::cout << "Game Over!" << std::endl;
+            input = _getch();
             exit(0);
         }
     }
