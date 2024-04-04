@@ -158,12 +158,19 @@ private:
         Position newPos = player.getPosition();
         newPos.x += dx;
         newPos.y += dy;
+
+        Position jumpPos = {newPos.x + dx, newPos.y + dy};
+
         if (newPos.y >= 1 && newPos.y < HEIGHT - 1 && newPos.x >= 1 && newPos.x < WIDTH - 1 && 
             (map[newPos.y][newPos.x] == ' ' || map[newPos.y][newPos.x] == '+' || map[newPos.y][newPos.x] == '%')) {
             map[player.getPosition().y][player.getPosition().x] = ' ';
             player.move(dx, dy);
             if (map[newPos.y][newPos.x] == '+') player.increaseLives(1);
             else if (map[newPos.y][newPos.x] == '%') player.decreaseLives(1);
+            updatePlayerAppearance();
+        }else if (map[newPos.y][newPos.x] == '=' && jumpPos.y >= 1 && jumpPos.y < HEIGHT - 1 && jumpPos.x >= 1 && jumpPos.x < WIDTH - 1 && map[jumpPos.y][jumpPos.x] == ' ') {
+            map[player.getPosition().y][player.getPosition().x] = ' ';
+            player.setPosition(jumpPos);
             updatePlayerAppearance();
         }
     }
